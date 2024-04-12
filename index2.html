@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>테스트</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://kit.fontawesome.com/be2c4ebe83.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f9f9fb;
+            margin: 0;
+            padding:0;
+            color: #333;
+        }
+
+        .btn-primary {
+            color: #fff;
+            background-color:  #dc3545;
+            border-color:   #dc3545
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        .word-list {
+            margin: 0 auto;
+            list-style-type: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .word-item {
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            background-color: #fff;
+            padding: 20px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .word-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .word-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align:center;
+        }
+
+        .word-meaning {
+            color: #555;
+            margin-top: 10px;
+            font-size: 1rem;
+            display: none;
+            background: #9f9f9f;
+            color: #fff;
+            display:none;
+        }
+
+        .kana {
+            color: #ff0000;
+            font-weight:bold;
+            font-size: 0.9rem;
+            display: none; /* 기본적으로 숨깁니다. */
+        }
+
+        /* 반응형 웹 디자인 */
+        @media screen and (max-width: 768px) {
+            .word-list {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+
+        button {
+            margin: 20px auto;
+            display: block;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+        .list-group-item{border:1px solid #111;}
+        .list-group-item+.list-group-item {border-top-width: thin;}
+        /*타이틀*/
+        .word-title{text-align:center;}
+        /*단어 뜻*/
+        .list-group-item div{text-align:center;}
+        .fa-solid{font-size:20px}
+        .header{width:100%;height:40px;line-height:40px;transition: top 0.3s ease;}
+        .header.fixed{position:fixed;top:0;background-color:#fff;left:0;z-index:1000;width:100%;height:40px;line-height:40px;}
+        .header div{float:left;}
+        .logo{margin-left:4%;}
+        .logo img{max-width:80px;}
+        #toggleAllMeanings{float:right;}
+
+        #wordList {
+            position: absolute;
+            width: 100%;
+            top: 40px;
+            background: #f3f3f3;
+            left: 0;
+        }
+
+        #wordList li{width:90%;margin:0 auto;background:#fff;border-radius:8px;box-shadow: inset;}
+        .wrapper{padding:0px;}
+        .prev{margin-left:2%;cursor:pointer;}
+        #toggleAllMeanings{margin-right:2%;}
+
+        #chapterButtons{margin-top:20px;width:100%;}
+        #chapterButtons div {
+            float: left;
+            width: 44%;
+            margin: 10px;
+            height: 80px;
+            line-height: 70px;
+            text-align: center; 
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+   
+    <div class="header">
+        <div class="prev"> <i class="fa-solid fa-chevron-left"></i></div>
+        <div class="logo"><i class="fa-solid fa-l"></i> <i class="fa-solid fa-s"></i> <i class="fa-solid fa-h"></i></div>
+        <div id="toggleAllMeanings"><i class="fa-solid fa-robot"></i></div>
+    </div>
+    <div class="container">
+        <div id="chapterButtons" class="text-center mb-4">
+            <div class="btn btn-primary" onclick="showChapter(1)">챕터 1<span class="word_number"></span></div>
+            <div class="btn btn-primary" onclick="showChapter(2)">챕터 2<span class="word_number"></span></div>
+            <div class="btn btn-primary" onclick="showChapter(3)">챕터 3<span class="word_number"></span></div>
+            <div class="btn btn-primary" onclick="showChapter(4)">챕터 4<span class="word_number"></span></div>
+            <div class="btn btn-primary" onclick="showChapter(5)">챕터 5<span class="word_number"></span></div>
+            <div class="btn btn-primary" onclick="showChapter(6)">챕터 6<span class="word_number"></span></div>
+            <div id="favoriteButton" class="btn btn-primary" onclick="showFavorites()">
+                즐겨찾기
+            </div>            
+        </div>
+        <ul id="wordList" class="list-group">
+        </ul>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    const wordListElement = document.getElementById("wordList");
+    let allMeaningsVisible = false; // 전체 뜻 보기 상태를 추적합니다.
+
+    function addToFavorites(word, kana, meaning) {
+        // 쿠키에서 즐겨찾기 목록을 가져옵니다.
+        let favorites = getFavorites();
+        // 이미 추가된 단어인지 확인합니다.
+        const exists = favorites.find(favorite => favorite.word === word);
+        if (!exists) {
+            // 새로운 단어를 즐겨찾기에 추가합니다.
+            favorites.push({ word, kana, meaning });
+            // 업데이트된 즐겨찾기 목록을 쿠키에 저장합니다.
+            document.cookie = `favorites=${JSON.stringify(favorites)}`;
+            // 즐겨찾기 목록을 표시합니다.
+            showFavorites();
+        }
+    }
+
+    function removeFromFavorites(word) {
+        // 쿠키에서 즐겨찾기 목록을 가져옵니다.
+        let favorites = getFavorites();
+        // 즐겨찾기 목록에서 해당 단어를 제거합니다.
+        favorites = favorites.filter(favorite => favorite.word !== word);
+        // 업데이트된 즐겨찾기 목록을 쿠키에 저장합니다.
+        document.cookie = `favorites=${JSON.stringify(favorites)}`;
+        // 즐겨찾기 목록을 표시합니다.
+        showFavorites();
+    }
+
+    function getFavorites() {
+        // 쿠키에서 즐겨찾기 목록을 가져옵니다.
+        const favoritesCookie = getCookie('favorites');
+        return favoritesCookie ? JSON.parse(favoritesCookie) : [];
+    }
+
+    function showFavorites() {
+        const favorites = getFavorites();
+        if (favorites.length > 0) {
+            // 즐겨찾기 목록을 표시하는 코드
+            wordListElement.innerHTML = ""; // 기존 목록 초기화
+            favorites.forEach(favorite => {
+                const listItem = document.createElement("li");
+                listItem.className = "list-group-item mt-4 ";
+
+                const wordTitle = document.createElement("div");
+                wordTitle.className = "word-title";
+                wordTitle.textContent = favorite.word;
+
+                const kanaElement = document.createElement("div");
+                kanaElement.className = "kana";
+                kanaElement.textContent = favorite.kana;
+
+                const meaningElement = document.createElement("div");
+                meaningElement.className = "word-meaning";
+                meaningElement.textContent = favorite.meaning;
+
+                const removeButton = document.createElement("button");
+                removeButton.className = "btn btn-outline-danger btn-sm remove-button";
+                removeButton.textContent = "삭제";
+                removeButton.addEventListener("click", function(event) {
+                    event.stopPropagation(); // 부모 요소의 클릭 이벤트 전파 방지
+                    const word = wordTitle.textContent;
+                    removeFromFavorites(word); // 즐겨찾기에서 단어를 제거하는 함수 호출
+                });
+
+                listItem.appendChild(wordTitle);
+                listItem.appendChild(kanaElement);
+                listItem.appendChild(meaningElement);
+                listItem.appendChild(removeButton);
+                wordListElement.appendChild(listItem);
+
+                // 클릭한 단어의 뜻과 후리가나를 표시합니다.
+                listItem.addEventListener("click", function() {
+                    meaningElement.style.display = meaningElement.style.display === "none" ? "block" : "none";
+                        kanaElement.style.display = kanaElement.style.display === "none" ? "block" : "none";
+                });
+            });
+        } else {
+            wordListElement.innerHTML = "<p></p>";
+        }
+    }
+
+    // 쿠키에서 값을 가져오는 함수
+    function getCookie(name) {
+        const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+        return cookieValue ? cookieValue.pop() : null;
+    }
+
+    // 단어 목록을 가져와서 표시하는 함수
+    function fetchWordList(chapter) {
+        axios.get(`/wordlist?chapter=${chapter}`)
+            .then(response => {
+                const wordList = response.data;
+                wordListElement.innerHTML = "";
+                wordList.forEach(word => {
+                    const listItem = document.createElement("li");
+                    listItem.className = "list-group-item mt-4 ";
+
+                    const wordTitle = document.createElement("div");
+                    wordTitle.className = "word-title";
+                    wordTitle.textContent = word.word;
+
+                    const kanaElement = document.createElement("div");
+                    kanaElement.className = "kana";
+                    kanaElement.textContent = word.kana;
+
+                    const meaningElement = document.createElement("div");
+                    meaningElement.className = "word-meaning";
+                    meaningElement.textContent = word.meaning;
+                    meaningElement.style.display = "none"; // 기본적으로 숨깁니다.
+
+                    const favoriteButton = document.createElement("button");
+                    favoriteButton.className = "btn btn-outline-primary btn-sm favorite-button";
+                    favoriteButton.textContent = "★ 즐겨찾기";
+                    favoriteButton.addEventListener("click", function(event) {
+                        event.stopPropagation(); // 부모 요소의 클릭 이벤트 전파 방지
+                        const word = wordTitle.textContent;
+                        const kana = kanaElement.textContent;
+                        const meaning = meaningElement.textContent;
+                        addToFavorites(word, kana, meaning); // 즐겨찾기에 추가하는 함수 호출
+                    });
+
+                    listItem.appendChild(wordTitle);
+                    listItem.appendChild(kanaElement);
+                    listItem.appendChild(meaningElement);
+                    listItem.appendChild(favoriteButton);
+                    wordListElement.appendChild(listItem);
+
+                    // 단어 클릭 시 의미와 후리가가 표시됩니다.
+                    listItem.addEventListener("click", function() {
+                        meaningElement.style.display = meaningElement.style.display === "none" ? "block" : "none";
+                        kanaElement.style.display = kanaElement.style.display === "none" ? "block" : "none";
+                    });
+                });
+            })
+            .catch(error => console.error('Error fetching word list:', error));
+    }
+
+    window.showChapter = function(chapter) {
+        fetchWordList(chapter);
+    };
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // 페이지가 로드될 때 기본적으로 첫 번째 챕터의 단어를 가져옵니다.
+        // showChapter(1);
+    });
+
+    // 전체 뜻 보기 열기/닫기 기능
+    document.getElementById("toggleAllMeanings").addEventListener("click", function() {
+        allMeaningsVisible = !allMeaningsVisible;
+        document.querySelectorAll(".word-meaning, .kana").forEach(function(element) {
+            element.style.display = allMeaningsVisible ? "block" : "none";
+        });
+
+        const iconClass = allMeaningsVisible ? "fa-solid fa-robot" : "fa-solid fa-robot";
+        const iconStyle = allMeaningsVisible ? "color:red;" : "color:black;";
+        this.innerHTML = `<i class="${iconClass}" style="${iconStyle}"></i>`;
+    });
+
+    // 이전 버튼 클릭 시 초기 상태로 변경
+    document.querySelector(".prev").addEventListener("click", function() {
+        wordListElement.innerHTML = ""; // 단어 목록을 비웁니다.
+        allMeaningsVisible = false; // 전체 뜻 보기 상태를 초기화합니다.
+    });
+
+    // 최상단 스크롤 업/다운
+    document.addEventListener("DOMContentLoaded", function() {
+        const articleWrapper = document.querySelector('.header');
+        const articleInner = document.querySelector('.article_m_inner');
+        const jbOffset = articleWrapper.offsetTop;
+
+        window.addEventListener("scroll", function() {
+            if (window.pageYOffset > jbOffset) {
+                articleWrapper.classList.add('fixed');
+            } else {
+                articleWrapper.classList.remove('fixed');
+            }
+        });
+    });
+
+</script>
+
+
+
+</body>
+</html>

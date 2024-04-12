@@ -1,0 +1,61 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    text-align: center;
+}
+
+.hidden {
+    display: none;
+}
+
+.full-screen-word {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.full-screen-word p {
+    font-size: 2em;
+}
+
+.full-screen-word button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 1em;
+}
+
+.chapter-select {
+    margin-bottom: 20px;
+}
+
+.word-list-container {
+    text-align: left;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.word-list li {
+    cursor: pointer;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.word-list li:hover {
+    background-color: #f0f0f0;
+}
