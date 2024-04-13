@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>일본어단어장</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://kit.fontawesome.com/be2c4ebe83.js" crossorigin="anonymous"></script>
     <style>
@@ -112,7 +113,7 @@
             background: #f3f3f3;
             left: 0;
         }
-
+        
         #wordList li{width:90%;margin:0 auto;background:#fff;border-radius:8px;box-shadow: inset;}
         .wrapper{padding:0px;}
         .prev{margin-left:2%;cursor:pointer;}
@@ -133,6 +134,7 @@
         .deleteButton .fa-solid{font-size:14px;color:#ff0018;}
         .btn-outline-primary{border:none;color:#666;font-size:12px;}
         .btn-outline-primary:hover{border:none;color:#ff0018;font-size:12px;background:none;}
+        #wordList{display:none;}
     </style>
 </head>
 <body>
@@ -157,13 +159,13 @@
             </div>
         </div>
     </div>
-
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        document.getElementById("favoriteList").style.display = "none";       
-        fetchdango();
-     });
+const btn = document.querySelector('.btn');
+const wordList = document.getElementById('wordList');
+btn.addEventListener('click', function() {
+wordList.style.display = 'block';
+});
 const wordListElement = document.getElementById("wordList");
     let allMeaningsVisible = false; // 전체 뜻 보기 상태를 추적합니다.
     let favoriteListVisible = false;
@@ -345,11 +347,6 @@ function fetchWordList(chapter) {
     window.showChapter = function(chapter) {
         fetchWordList(chapter);
     };
-
-    document.addEventListener("DOMContentLoaded", function() {
-        // 페이지가 로드될 때 기본적으로 첫 번째 챕터의 단어를 가져옵니다.
-        // showChapter(1);
-    });
 
     // 전체 뜻 보기 열기/닫기 기능
     document.getElementById("toggleAllMeanings").addEventListener("click", function() {
