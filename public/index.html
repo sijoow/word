@@ -150,6 +150,10 @@
                 <div class="btn btn-primary" onclick="showChapter(2)">day2<span class="word_number"></span></div>
                 <div class="btn btn-primary" onclick="showChapter(3)">day3<span class="word_number"></span></div>
                 <div class="btn btn-primary" onclick="showChapter(4)">day4<span class="word_number"></span></div>
+                <div class="btn btn-primary" onclick="showChapter(5)">day5<span class="word_number"></span></div>
+
+
+
                 <div id="favoriteButton" class="btn btn-primary">즐겨찾기</div>            
             </div>
             <ul id="wordList" class="list-group">
@@ -162,9 +166,9 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
 const btn = document.querySelector('.btn');
-const wordList = document.getElementById('wordList');
-btn.addEventListener('click', function() {
-wordList.style.display = 'block';
+    const wordList = document.getElementById('wordList');
+    btn.addEventListener('click', function() {
+    wordList.style.display = 'block';
 });
 const wordListElement = document.getElementById("wordList");
     let allMeaningsVisible = false; // 전체 뜻 보기 상태를 추적합니다.
@@ -177,7 +181,7 @@ const wordListElement = document.getElementById("wordList");
         fetchdango(); // 즐겨찾기 목록을 갱신합니다.
         favoriteList.style.display = "block"; // 즐겨찾기 목록을 보이도록 설정합니다.
     } else {
-        favoriteList.innerHTML = ""; // 즐겨찾기 목록을 비웁니다.
+        favoriteList.innerHTML = "추가된 목록이 없습니다."; // 즐겨찾기 목록을 비웁니다.
         favoriteList.style.display = "none"; // 즐겨찾기 목록을 숨깁니다.
     }
 });
