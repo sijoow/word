@@ -144,8 +144,10 @@ const wordLists = {
         { word: "貿易", kana: "ぼうえき", meaning: "무역" },
         { word: "予防", kana: "よぼう", meaning: "예방" },
         { word: "散策", kana: "さんさく", meaning: "산책" },
+
         { word: "進歩", kana: "しんぽ", meaning: "진보" },
-        { word: "一般", kana: "しんぽ", meaning: "일반" },
+        { word: "一般", kana: "いっぱん", meaning: "일반" },
+
         { word: "一方", kana: "いっぽう", meaning: "한쪽,한편" },
         { word: "学科", kana: "がくか", meaning: "학과" },
         { word: "活気", kana: "かっき", meaning: "활기" },
