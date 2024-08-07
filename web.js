@@ -440,7 +440,7 @@ const wordLists = {
 };
 
  
-};
+
 
 // MongoDB에서 즐겨찾기 목록을 가져오는 함수
 async function getdangoFromDB() {
