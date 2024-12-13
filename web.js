@@ -561,10 +561,11 @@ app.get('/wordlist', (req, res) => {
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
+//버전이 업될떄 마다 데이터가 추가되는 방식으로 깃연결하기
 
 app.delete('/dango/:word', async (req, res) => {
     try {
-        // 클라이언트가 요청한 데이터 추출
+        // 깃허브 연동체크
         const word = req.params.word;
         // MongoDB에 연결
         await client.connect();
